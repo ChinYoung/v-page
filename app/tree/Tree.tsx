@@ -1,8 +1,8 @@
 'use client'
+import { ChangeEvent, FC, useCallback, useEffect, useState } from 'react'
 
-import { ChangeEvent, FC, useCallback, useEffect, useState } from "react"
-
-const Tree: FC = () => {
+export const Tree: FC = () => {
+  let x = 'aa'
   const [list, setList] = useState<(number | string)[]>([])
   const [nodeList, setNodeList] = useState<(number | string)[][]>([])
   const inputHandler = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -24,14 +24,17 @@ const Tree: FC = () => {
     const newList = []
     while (toGoList.length !== 0) {
       newList.push(toGoList.map((i) => list[i]))
-      toGoList = toGoList.reduce((acc: number[], cur: number) => {
-        const leftChildIndex = 2 * cur + 1
-        const rightChildIndex = 2 * cur + 2
+      toGoList = toGoList.reduce(
+        (acc: number[], cur: number) => {
+          const leftChildIndex = 2 * cur + 1
+          const rightChildIndex = 2 * cur + 2
 
-        leftChildIndex <= list.length - 1 && acc.push(leftChildIndex)
-        rightChildIndex <= list.length - 1 && acc.push(rightChildIndex)
-        return acc
-      }, [])
+          leftChildIndex <= list.length - 1 && acc.push(leftChildIndex)
+          rightChildIndex <= list.length - 1 && acc.push(rightChildIndex)
+          return acc
+        },
+        [list],
+      )
       const beforeLast = newList[newList.length - 2] || []
       const last = newList[newList.length - 1] || []
       const missing = Array.from({ length: beforeLast.length * 2 - last.length }).map((_i) => 'n')
@@ -71,4 +74,3 @@ const Tree: FC = () => {
     </div>
   )
 }
-export default Tree
