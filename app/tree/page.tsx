@@ -41,7 +41,7 @@ const Tree: FC = () => {
   }, [list])
 
   return (
-    <div className="w-screen h-screen flex flex-col justify-start items-center bg-slate-200">
+    <main className="w-screen h-screen flex flex-col justify-start items-center bg-slate-200">
       <div className="text-black">{JSON.stringify(list)}</div>
       <div className="text-black">{JSON.stringify(nodeList)}</div>
       <div>
@@ -68,7 +68,7 @@ const Tree: FC = () => {
           </div>
         ))}
       </div>
-    </div>
+    </main>
   )
 }
 export default Tree

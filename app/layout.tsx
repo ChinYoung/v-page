@@ -3,8 +3,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
+import { Menu } from '@/components/Menu'
 
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -18,10 +18,15 @@ export default function RootLayout({
 }) {
   return (
     <html>
-      <body className={inter.className}>
-        <Header/>
-        {children}
-        <Footer/>
+      <body className='min-h-screen flex flex-col font-serif'>
+        <Header />
+        <Menu />
+        <div className="flex flex-1 pt-4">
+          <div className="w-1/5">left sidebar</div>
+          <div className="flex-1 px-4">{children}</div>
+          <div className="w-1/5">right sidebar</div>
+        </div>
+        <Footer />
       </body>
     </html>
   )

@@ -1,74 +1,79 @@
 'use client'
-import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useState } from "react";
+import { TwoDimensionalArray } from "./components/TwoDimensionalArray";
+import { useStatefulInput } from "@/hooks/useStatefulInput";
+
+function createTwoDimensionalArray(rowCount: number, colCount: number) {
+  return Array.from({ length: rowCount }).map(_ => Array.from({ length: colCount }).map(_ => '0'))
+}
 
 const Matrix: FC = () => {
-  const [matrix, setMatrix] = useState<number[][]>([])
-  const rowCount = matrix.length
-  const colCount = (matrix[0] || []).length
-  const inputHandler = useCallback((e: ChangeEvent) => {
-    const { value } = e.currentTarget as HTMLTextAreaElement
-    console.log(value)
-    if (!value) {
+  const { TheContent: rowCount, TheHandler: rowCountChangeHandler } = useStatefulInput('4')
+  const { TheContent: colCount, TheHandler: colCountChangeHandler } = useStatefulInput('4')
+  const [matrix, setMatrix] = useState<string[][]>(createTwoDimensionalArray(parseInt(rowCount), parseInt(colCount)))
+
+  const updateMatrix = useCallback((row: number, col: number, newVal: string) => {
+    const newMatrix = [...matrix]
+    newMatrix[row][col] = newVal
+    setMatrix(newMatrix)
+  }, [matrix])
+
+  const regenerate = useCallback(() => {
+    if (matrix.length === parseInt(rowCount) && matrix[0].length === parseInt(colCount)) {
       return
     }
-    try {
-      const inputMatrix = JSON.parse(value) as number[][]
-      setMatrix(inputMatrix)
-    } catch (err) {
-      console.error(err)
-      setMatrix([])
-    }
-  }, [])
-  useEffect(() => {
-    console.log(matrix, '----------')
-  }, [matrix])
+    const rowCountNum = parseInt(rowCount)
+    const colCountNum = parseInt(colCount)
+    const newMatrix = createTwoDimensionalArray(rowCountNum, colCountNum)
+    matrix.forEach((row, rowIndex) => {
+      row.forEach((cellVal, colIndex) => {
+        if (!(rowIndex <= rowCountNum - 1 && colIndex <= colCountNum - 1)) {
+          return
+        }
+        newMatrix[rowIndex][colIndex] = cellVal
+      })
+    })
+    setMatrix(newMatrix)
+  }, [colCount, matrix, rowCount])
+
   return (
-    <div className="p-12 min-w-screen min-h-screen flex flex-col justify-start items-center gap-4">
-      <div>
-        <textarea
-          name="matrix"
-          id="matrix-input"
-          className="text-black"
-          cols={100}
-          rows={10}
-          onChange={inputHandler}
-        ></textarea>
-      </div>
-      <div className="flex flex-col justify-start items-center">
-        {/* col mark, header */}
-        <div className="flex justify-center items-center">
-          <div className="h-12 w-12 flex justify-start items-start"></div>
-          {Array.from({ length: colCount }, (v, k) => k).map((idx) => (
-            <div className="w-8 h-12 flex justify-center items-start" key={`header-${idx}`}>
-              {idx}
-            </div>
-          ))}
+    <main className="p-12 min-w-screen min-h-screen flex flex-col justify-start items-center gap-4">
+      <div className="flex flex-col justify-start items-start gap-2">
+        {/* row input */}
+        <div className="flex gap-2 text-black">
+          <span className="w-16">row</span>
+          <span>
+            <input
+              className="border p-1 rounded"
+              name="row"
+              defaultValue={4}
+              onChange={rowCountChangeHandler}
+            ></input>
+          </span>
         </div>
-        {matrix.map((row, rowIndex) => (
-          <div className="flex justify-center items-center" key={`row-${rowIndex}`}>
-            {/* row mark, header */}
-            <div className="h-8 w-12 flex justify-start items-center">{rowIndex}</div>
-            {row.map((cell, cellIndex) =>
-              cell === 1 ? (
-                <div
-                  className="w-8 h-8 border border-blue-600 flex justify-center items-center bg-slate-400"
-                  key={`cell-${cellIndex}`}
-                >
-                  {cell}
-                </div>
-              ) : (
-                <div
-                  className="w-8 h-8 border border-blue-600 flex justify-center items-center"
-                  key={`cell-${cellIndex}`}
-                >
-                  {cell}
-                </div>
-              ),
-            )}
-          </div>
-        ))}
+        {/* col input */}
+        <div className="flex gap-2 text-black">
+          <span className="w-16">col</span>
+          <span>
+            <input
+              className="border p-1 rounded"
+              name="row"
+              defaultValue={4}
+              onChange={colCountChangeHandler}
+            ></input>
+          </span>
+        </div>
       </div>
-    </div>
+      <div>
+        <button
+          onClick={regenerate}
+          className="px-4 py-2 bg-blue-400 text-white border-blue-400 border rounded-lg"
+        >
+          regenerate
+        </button>
+      </div>
+      <TwoDimensionalArray matrix={matrix} updateMatrix={updateMatrix} />
+    </main>
   )
 }
 
